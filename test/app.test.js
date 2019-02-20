@@ -61,8 +61,7 @@ it('/apps?sort=foobar should give 400 error', () => {
     .get('/apps')
     .query({ sort: 'foobar' })
     .expect(400, 'Sort must be one of rating or app')
-    .then(res => 
-      expect(res.body).to.be.empty);
+    .then(res => expect(res.body).to.be.empty);
 });
 
 it('/apps?genres=card should return an array of apps with the genre "card", 200 OK', () => {
@@ -93,8 +92,15 @@ it('/apps?genres=foobar should give 400 error', () => {
   return request(app)
     .get('/apps')
     .query({ genres: 'foobar' })
-    .expect(400, 'Genres must be one of action, puzzle, strategy, casual, arcade, or card')
-    .then(res => 
-      expect(res.body).to.be.empty);
+    .expect(
+      400,
+      'Genres must be one of action, puzzle, strategy, casual, arcade, or card'
+    )
+    .then(res => expect(res.body).to.be.empty);
 });
 
+it('/ should return 404 error', () => {
+  return request(app)
+    .get('/')
+    .expect(404);
+});
