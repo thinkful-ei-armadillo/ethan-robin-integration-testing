@@ -30,18 +30,30 @@ it('/apps should return an array of apps, 200 OK', () => {
     });
 });
 
-// /apps
-  // should return 200
-  // should be content type json
-  // should return an array, geater than 0
-  // array items should have the keys...
+it('/apps?sort=app should return an array of apps sorted by name, 200 OK', () => {
+  return request(app)
+    .get('/apps')
+    .query({ sort: 'app' })
+    .expect(200)
+    .expect('Content-Type', /json/)
+    .then(res => {
+      expect(res.body).to.be.an('array').with.lengthOf.at.least(1);
+      expect(res.body[0]).to.have.keys(requiredKeys);
 
-// /apps?sort=app
-  // should return 200
-  // should be content type json
-  // should be an array with length greater than 0
-  // array items should have the keys...
-  // array items should be sorted
+
+      let i = 0;
+      let sorted = true;
+
+      while(sorted && i < res.body.length - 1) {
+        sorted = sorted && res.body[i].App < res.body[i + 1].App;
+        i++;
+      }
+
+      expect(sorted).to.be.true;
+    });
+});
+
+
 
 // /apps?sort=FOOBAR
   // should return 400
@@ -49,12 +61,29 @@ it('/apps should return an array of apps, 200 OK', () => {
   // should not have a content-type
   // body should empty
 
-// /apps?genres=card
-  // should return 200
-  // should be content type json
-  // should return an array with length greater htan 0
-  // array items should have the keys...
-  // array items should all have genres=card
+
+  it('/apps?genres=card should return an array of apps with the genre "card", 200 OK', () => {
+    return request(app)
+      .get('/apps')
+      .query({ genres: 'card' })
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .then(res => {
+        expect(res.body).to.be.an('array').with.lengthOf.at.least(1);
+        expect(res.body[0]).to.have.keys(requiredKeys);
+
+        let allCard = true;
+
+        res.body.forEach((app) => {
+          if (app.Genres.toLowerCase() !== 'card') {
+            allCard = false;
+          }
+        });
+
+        expect(allCard).to.be.true;
+      });
+  });
+
 
 // /apps?genres=FOOBAR
   // should return 400
